@@ -1,4 +1,6 @@
 language: cpp
+python:
+  - "2.7"
 # dist: trusty
 dist: precise
 compiler:
