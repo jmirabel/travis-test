@@ -1,11 +1,18 @@
 language: cpp
+sudo: false
 python:
-  - "2.7"
-# dist: trusty
+- '2.7'
+env:
+  global:
+    secure: CRLTEf9MKVBAva9dQjA07WP3GPPcIFRM6tHU58FdfzPQ5+KuAYYENjDHWOcD+4yPlIl0y16evC1Bv6Ztzu/ZyBGGkNfQLZOqu1MupQ43uuwYrZbHjkXbSPrUe5IvluQmgdnojoLexWzLOg9hhELHbdKW6HlPhJ+Cxg5uDSZxFF67QhMhpGGnzg1G9MB534Ozg0meWl2pTm+MDGZ4PLDt5BaUhuflNQcV73t68sHndXJdfSXsAnyF48SN7Avw4z87zDVMB4kDVy0CC7VhCPf3HB+5yWx744y/H6nAWvxLFsu7MpoYRlSt5q5Pd5Rx0zMV6LGw3VX5mhs/CWjAXXS0zczh2jW8dSyA0rZdjXXq2ePFbrCMh+xoYXx6UoSBVfry+GCFlNHNFnfSyxVdLe4Hwtb02A/GJHokDbNa0mx0CM6TWQ52UIZN0KuZF4NMlWbvm/WDVi8yQh7I3YaZZOTphPYAIOGuxzTShXjooUo6ASbWIQrVP1l12K91aR0jBSpQKrV929STwIWUBHrvCFkOnlpm8oSuZ/2AP2EpmEf/FFCkJnxq8OGKW2L2Z1OMRaZpmTVYPn5I1NMJWtajb/uRcyQrfMIh0VJnkRSeVOJc8MOk1JShmj3g3GyYtcCLmMA4z/w9P9wO1yf8SH7xO8GiIq4E4EewNIyP8k1LEbqsMsM=
 dist: precise
 compiler:
-  - gcc
-before_install:
-  - sudo apt-get install libpython2.7 python-numpy
+- gcc
+addons:
+  apt:
+    packages:
+    - libpython2.7
+    - python-numpy
 script:
-  - cmake .
+- cmake .
+after_success: .travis/after_success

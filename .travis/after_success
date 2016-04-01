@@ -1,0 +1,76 @@
+#!/bin/bash
+set -ev
+
+# Directories.
+root_dir=`pwd`
+build_dir="$root_dir/_travis/build"
+install_dir="$root_dir/_travis/install"
+
+print_variables()
+{
+  for var in "$@"; do
+    echo "${var}=${!var}"
+  done
+}
+
+abort()
+{
+  echo "abort: $@" | sed '1!s/^[         ]*/             /' >&2
+  exit 1
+}
+
+update_documentation()
+{
+  remote_url="https://github.com/jmirabel/travis-test"
+  branch="test"
+
+  # If we are on the master branch of humanoid-path-planner and
+  # this is not a pull-request
+  if `test "${TRAVIS_REPO_SLUG}" = "jmirabel/travis-test" -a ${TRAVIS_PULL_REQUEST} = false -a ${TRAVIS_BRANCH} = master`; then
+    git checkout -b ${branch}
+
+    # Update git config
+    git config user.name  'Joseph Mirabel'
+    git config user.email 'jmirabel@laas.fr'
+
+    # Update the documentation.
+    echo "This is a test" > README
+    git add README
+
+    tmp=`mktemp -d` || abort "cannot create the temporary directory"
+    trap "rm -rf -- '$tmp'" EXIT
+
+    echo "[travis-bot] Test." > $tmp/commit_msg
+    commit_status=`git status -s`
+
+    # Make sure that there is something to commit.
+    # If this is not the case, the documentation is already
+    # up-to-date and the commit should not be generated.
+    if test -n "$commit_status"; then
+      git commit --quiet -F $tmp/commit_msg \
+        || abort "failed to generate the git commit"
+
+      # Get git read for pushing
+      # git config credentials.helper "store --file=.git/credentials"
+      # echo "https://jmirabel:${GH_TOKEN}@github.com" > ".git/credentials"
+      git remote set-url origin "https://jmirabel:${GH_TOKEN}@github.com/jmirabel/travis-test.git"
+
+      echo "* Push the generated commit..."
+      git push origin ${branch}
+
+      echo "Test run with success!"
+    else
+      echo "Github pages documentation is already up-to-date."
+    fi
+
+    # Clean up the tmp directory
+    rm -rf $tmp
+
+    trap - EXIT
+  else
+    echo "Not updating the documentation"
+    print_variables TRAVIS_REPO_SLUG TRAVIS_PULL_REQUEST TRAVIS_BRANCH
+  fi
+}
+
+update_documentation
