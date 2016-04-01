@@ -6,6 +6,6 @@ dist: precise
 compiler:
   - gcc
 before_install:
-  - sudo apt-get install libpython2.7
+  - sudo apt-get install libpython2.7 python-numpy
 script:
   - cmake .
